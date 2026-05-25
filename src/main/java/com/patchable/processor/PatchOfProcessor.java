@@ -8,9 +8,11 @@ import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.SupportedAnnotationTypes;
 import javax.annotation.processing.SupportedSourceVersion;
 import javax.lang.model.SourceVersion;
+import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
+import javax.lang.model.element.RecordComponentElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.DeclaredType;
@@ -70,17 +72,45 @@ public class PatchOfProcessor extends AbstractProcessor {
         }
     }
 
+    private static final Set<String> PRESENCE_ANNOTATIONS = Set.of(
+            "jakarta.validation.constraints.NotNull",
+            "jakarta.validation.constraints.NotBlank",
+            "jakarta.validation.constraints.NotEmpty",
+            "javax.validation.constraints.NotNull",
+            "javax.validation.constraints.NotBlank",
+            "javax.validation.constraints.NotEmpty"
+    );
+
     private List<DtoField> extractDtoFields(TypeElement dtoElement) {
         List<DtoField> fields = new ArrayList<>();
-        for (var component : dtoElement.getRecordComponents()) {
+        for (RecordComponentElement component : dtoElement.getRecordComponents()) {
             String name = component.getSimpleName().toString();
             TypeMirror type = component.asType();
             boolean isPatchField = isPatchFieldType(type);
             TypeMirror underlyingType = isPatchField ? extractPatchFieldInnerType(type) : type;
 
+            if (isPatchField) {
+                validateNoPresenceAnnotations(component);
+            }
+
             fields.add(new DtoField(name, type, underlyingType, isPatchField));
         }
         return fields;
+    }
+
+    private void validateNoPresenceAnnotations(RecordComponentElement component) {
+        // Jakarta Validation annotations don't target RECORD_COMPONENT,
+        // so they propagate to the accessor method instead.
+        for (AnnotationMirror am : component.getAccessor().getAnnotationMirrors()) {
+            String annotationName = am.getAnnotationType().toString();
+            if (PRESENCE_ANNOTATIONS.contains(annotationName)) {
+                error(component,
+                        "@%s cannot be used on PatchField. "
+                        + "PatchField represents an optional PATCH operation — "
+                        + "presence constraints are incompatible with PATCH semantics.",
+                        am.getAnnotationType().asElement().getSimpleName());
+            }
+        }
     }
 
     private boolean isPatchFieldType(TypeMirror type) {

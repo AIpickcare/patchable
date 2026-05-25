@@ -65,6 +65,24 @@ public record MemberProfilePatch(
 
 Required (NOT NULL) fields use plain types. Optional (nullable) fields use `PatchField`. The wrapping decision mirrors your domain model's nullability.
 
+### 4. Bean Validation Support
+
+When `spring-boot-starter-validation` is on the classpath, Bean Validation annotations work on `PatchField` fields out of the box.
+
+```java
+@PatchOf(value = Member.class, method = "updateMember")
+public record MemberProfilePatch(
+    @Size(min = 2, max = 50) String name,
+    @Size(max = 200) @Email PatchField<String> email,
+    @Size(max = 500) PatchField<String> bio
+) {}
+```
+
+- Validates the inner value only when `Value` (`@Size`, `@Email`, `@Pattern`, `@Min`, etc.)
+- Skips validation for `Delete` / `Unset` — there is no value to validate
+
+**Compile error:** Presence annotations (`@NotNull`, `@NotBlank`, `@NotEmpty`) on `PatchField` cause a compile error. In PATCH semantics, "field not sent = no change," so presence constraints are incompatible.
+
 ## How It Works
 
 1. Discovers DTOs annotated with `@PatchOf(value = Member.class, method = "updateMember")` at compile time

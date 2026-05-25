@@ -339,6 +339,104 @@ class PatchOfProcessorTest {
     }
 
     @Test
+    @DisplayName("PatchField 에 @NotNull 을 붙이면 컴파일 에러")
+    void should_error_when_notNull_on_patchField() {
+        JavaFileObject entity = JavaFileObjects.forSourceString("com.test.Member", """
+                package com.test;
+                public class Member {
+                    private String name;
+                    public String getName() { return name; }
+                    public void updateMember(String name) {
+                        this.name = name;
+                    }
+                }
+                """);
+
+        JavaFileObject dto = JavaFileObjects.forSourceString("com.test.MemberPatch", """
+                package com.test;
+                import com.patchable.api.PatchOf;
+                import com.patchable.api.PatchField;
+                import jakarta.validation.constraints.NotNull;
+                @PatchOf(value = Member.class, method = "updateMember")
+                public record MemberPatch(
+                    @NotNull PatchField<String> name
+                ) {}
+                """);
+
+        Compilation compilation = javac()
+                .withProcessors(new PatchOfProcessor())
+                .compile(entity, dto);
+
+        assertThat(compilation).failed();
+        assertThat(compilation).hadErrorContaining("@NotNull cannot be used on PatchField");
+    }
+
+    @Test
+    @DisplayName("PatchField 에 @NotBlank 을 붙이면 컴파일 에러")
+    void should_error_when_notBlank_on_patchField() {
+        JavaFileObject entity = JavaFileObjects.forSourceString("com.test.Member", """
+                package com.test;
+                public class Member {
+                    private String name;
+                    public String getName() { return name; }
+                    public void updateMember(String name) {
+                        this.name = name;
+                    }
+                }
+                """);
+
+        JavaFileObject dto = JavaFileObjects.forSourceString("com.test.MemberPatch", """
+                package com.test;
+                import com.patchable.api.PatchOf;
+                import com.patchable.api.PatchField;
+                import jakarta.validation.constraints.NotBlank;
+                @PatchOf(value = Member.class, method = "updateMember")
+                public record MemberPatch(
+                    @NotBlank PatchField<String> name
+                ) {}
+                """);
+
+        Compilation compilation = javac()
+                .withProcessors(new PatchOfProcessor())
+                .compile(entity, dto);
+
+        assertThat(compilation).failed();
+        assertThat(compilation).hadErrorContaining("@NotBlank cannot be used on PatchField");
+    }
+
+    @Test
+    @DisplayName("PatchField 에 @Size 같은 값 제약 어노테이션은 허용된다")
+    void should_allow_value_constraints_on_patchField() {
+        JavaFileObject entity = JavaFileObjects.forSourceString("com.test.Member", """
+                package com.test;
+                public class Member {
+                    private String name;
+                    public String getName() { return name; }
+                    public void updateMember(String name) {
+                        this.name = name;
+                    }
+                }
+                """);
+
+        JavaFileObject dto = JavaFileObjects.forSourceString("com.test.MemberPatch", """
+                package com.test;
+                import com.patchable.api.PatchOf;
+                import com.patchable.api.PatchField;
+                import jakarta.validation.constraints.Size;
+                @PatchOf(value = Member.class, method = "updateMember")
+                public record MemberPatch(
+                    @Size(min = 1, max = 100) PatchField<String> name
+                ) {}
+                """);
+
+        Compilation compilation = javac()
+                .withProcessors(new PatchOfProcessor())
+                .compile(entity, dto);
+
+        assertThat(compilation).succeeded();
+    }
+
+    @Test
     @DisplayName("DTO 필드 타입과 메서드 파라미터 타입이 다르면 컴파일 에러")
     void should_error_on_type_mismatch() {
         JavaFileObject entity = JavaFileObjects.forSourceString("com.test.Member", """
