@@ -1,12 +1,17 @@
 # Patchable
 
-[![](https://jitpack.io/v/dudxor4587/patchable.svg)](https://jitpack.io/#dudxor4587/patchable)
+[![](https://jitpack.io/v/AIpickcare/patchable.svg)](https://jitpack.io/#AIpickcare/patchable)
 
 [English](README.en.md)
 
 **도메인 메서드를 보존하면서 PATCH 보일러플레이트를 없애는 Java 라이브러리.**
 
 컴파일 타임에 Patcher 를 자동 생성하고, 도메인 메서드를 직접 호출합니다.
+
+## Fork 정보
+
+이 저장소는 [dudxor4587/patchable](https://github.com/dudxor4587/patchable) v0.1.0을 기반으로 한 사내 fork입니다.
+개인 저장소 종속을 방지하기 위해 조직 계정으로 관리합니다.
 
 ## 왜 만들었나
 
@@ -92,8 +97,8 @@ repositories {
 }
 
 dependencies {
-    implementation 'com.github.dudxor4587:patchable:v0.1.0'
-    annotationProcessor 'com.github.dudxor4587:patchable:v0.1.0'
+    implementation 'com.github.AIpickcare:patchable:v0.1.0'
+    annotationProcessor 'com.github.AIpickcare:patchable:v0.1.0'
 }
 ```
 
@@ -104,8 +109,8 @@ repositories {
 }
 
 dependencies {
-    implementation("com.github.dudxor4587:patchable:v0.1.0")
-    annotationProcessor("com.github.dudxor4587:patchable:v0.1.0")
+    implementation("com.github.AIpickcare:patchable:v0.1.0")
+    annotationProcessor("com.github.AIpickcare:patchable:v0.1.0")
 }
 ```
 
@@ -120,7 +125,7 @@ dependencies {
 
 <dependencies>
     <dependency>
-        <groupId>com.github.dudxor4587</groupId>
+        <groupId>com.github.AIpickcare</groupId>
         <artifactId>patchable</artifactId>
         <version>v0.1.0</version>
     </dependency>
@@ -134,7 +139,7 @@ dependencies {
             <configuration>
                 <annotationProcessorPaths>
                     <path>
-                        <groupId>com.github.dudxor4587</groupId>
+                        <groupId>com.github.AIpickcare</groupId>
                         <artifactId>patchable</artifactId>
                         <version>v0.1.0</version>
                     </path>

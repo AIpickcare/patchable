@@ -1,12 +1,17 @@
 # Patchable
 
-[![](https://jitpack.io/v/dudxor4587/patchable.svg)](https://jitpack.io/#dudxor4587/patchable)
+[![](https://jitpack.io/v/AIpickcare/patchable.svg)](https://jitpack.io/#AIpickcare/patchable)
 
 [한국어](README.md)
 
 **A Java library that eliminates PATCH boilerplate while preserving domain methods.**
 
 Auto-generates patchers at compile time, calling domain methods directly.
+
+## Fork Info
+
+This repository is an internal fork of [dudxor4587/patchable](https://github.com/dudxor4587/patchable) v0.1.0.
+It is managed under the organization account to avoid dependency on a personal repository.
 
 ## The Problem
 
@@ -89,8 +94,8 @@ repositories {
 }
 
 dependencies {
-    implementation 'com.github.dudxor4587:patchable:v0.1.0'
-    annotationProcessor 'com.github.dudxor4587:patchable:v0.1.0'
+    implementation 'com.github.AIpickcare:patchable:v0.1.0'
+    annotationProcessor 'com.github.AIpickcare:patchable:v0.1.0'
 }
 ```
 
@@ -101,8 +106,8 @@ repositories {
 }
 
 dependencies {
-    implementation("com.github.dudxor4587:patchable:v0.1.0")
-    annotationProcessor("com.github.dudxor4587:patchable:v0.1.0")
+    implementation("com.github.AIpickcare:patchable:v0.1.0")
+    annotationProcessor("com.github.AIpickcare:patchable:v0.1.0")
 }
 ```
 
@@ -117,7 +122,7 @@ dependencies {
 
 <dependencies>
     <dependency>
-        <groupId>com.github.dudxor4587</groupId>
+        <groupId>com.github.AIpickcare</groupId>
         <artifactId>patchable</artifactId>
         <version>v0.1.0</version>
     </dependency>
@@ -131,7 +136,7 @@ dependencies {
             <configuration>
                 <annotationProcessorPaths>
                     <path>
-                        <groupId>com.github.dudxor4587</groupId>
+                        <groupId>com.github.AIpickcare</groupId>
                         <artifactId>patchable</artifactId>
                         <version>v0.1.0</version>
                     </path>
