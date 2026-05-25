@@ -1,6 +1,5 @@
 .gradle/
 build/
-!gradle/wrapper/gradle-wrapper.jar
 *.class
 *.jar
 *.war
@@ -8,3 +7,6 @@ build/
 .idea/
 out/
 .DS_Store
+
+# gradle wrapper jar 는 커밋 필요
+!gradle/wrapper/gradle-wrapper.jar
