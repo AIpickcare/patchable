@@ -63,6 +63,24 @@ public record MemberProfilePatch(
 
 필수 필드 (NOT NULL) 는 평범한 타입, 옵셔널 필드 (Nullable) 만 `PatchField` 로 감쌉니다.
 
+### 4. Bean Validation 지원
+
+`spring-boot-starter-validation` 이 클래스패스에 있으면, `PatchField` 필드에도 Bean Validation 어노테이션이 동작합니다.
+
+```java
+@PatchOf(value = Member.class, method = "updateMember")
+public record MemberProfilePatch(
+    @Size(min = 2, max = 50) String name,
+    @Size(max = 200) @Email PatchField<String> email,
+    @Size(max = 500) PatchField<String> bio
+) {}
+```
+
+- `Value` 일 때만 내부 값을 검증합니다 (`@Size`, `@Email`, `@Pattern`, `@Min` 등)
+- `Delete` / `Unset` 이면 검증을 건너뜁니다 — 값이 없으므로 검증할 대상이 없습니다
+
+**컴파일 에러:** `PatchField` 에 존재 여부를 검사하는 어노테이션 (`@NotNull`, `@NotBlank`, `@NotEmpty`) 을 붙이면 컴파일 에러가 발생합니다. PATCH 에서는 "필드를 안 보냄 = 변경 안 함" 이므로 존재 제약은 의미가 맞지 않습니다.
+
 ## 동작 원리
 
 1. `@PatchOf(value = Member.class, method = "updateMember")` 가 붙은 DTO 를 컴파일 타임에 발견

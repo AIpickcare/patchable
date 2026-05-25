@@ -11,8 +11,10 @@ com.patchable/
 │   ├── PatchFieldDeserializer.java   JSON → PatchField 변환
 │   ├── PatchFieldModule.java         Jackson Module 등록
 │   └── PatchFieldAutoConfiguration.java   Spring Boot 자동 설정
+├── validation/           ← Bean Validation 통합
+│   └── PatchFieldValueExtractor.java PatchField 값 추출 (SPI 자동 등록)
 └── processor/            ← 어노테이션 프로세서
-    └── PatchOfProcessor.java         컴파일 타임 코드 생성
+    └── PatchOfProcessor.java         컴파일 타임 코드 생성 + 존재 제약 차단
 ```
 
 ## Annotation Processor 동작 흐름
@@ -96,6 +98,29 @@ private static <T> T resolve(PatchField<T> field, T current) {
 
 `ContextualDeserializer` 를 구현하여 `PatchField<T>` 의 제네릭 타입 `T` 를 런타임에 결정한다.
 
+## Bean Validation 통합
+
+### ValueExtractor
+
+`PatchFieldValueExtractor` 는 Bean Validation 2.0+ 의 `ValueExtractor` 를 구현한다. `@UnwrapByDefault` 가 붙어 있어, `PatchField` 필드의 제약 어노테이션이 자동으로 내부 값에 적용된다.
+
+```
+@Size(min = 2) PatchField<String> name
+         ↓ ValueExtractor
+  Value("a")  → @Size 가 "a" 에 적용 → violation
+  Delete       → extractValues 가 값을 전달하지 않음 → 검증 스킵
+  Unset        → extractValues 가 값을 전달하지 않음 → 검증 스킵
+```
+
+### 존재 제약 컴파일 에러
+
+`PatchOfProcessor` 는 `PatchField` 필드에 존재 여부를 검사하는 어노테이션이 붙어 있으면 컴파일 에러를 발생시킨다.
+
+금지 대상:
+- `@NotNull`, `@NotBlank`, `@NotEmpty` (jakarta / javax 모두)
+
+Jakarta Validation 어노테이션은 `@Target` 에 `RECORD_COMPONENT` 가 없어 record 컴포넌트에 직접 나타나지 않는다. 대신 accessor 메서드로 전파되므로, `component.getAccessor().getAnnotationMirrors()` 에서 검사한다.
+
 ## 설계 결정 기록
 
 | 결정 | 선택 | 이유 |
@@ -108,3 +133,4 @@ private static <T> T resolve(PatchField<T> field, T current) {
 | Jackson 호환 | 2.x | Spring Boot 3.x 전체 호환 |
 | 이름 매핑 | 미지원 (converter 위임) | 라이브러리 scope 명확화 |
 | 타입 변환 | 미지원 (converter 위임) | 변환은 비즈니스 로직 영역 |
+| Bean Validation | ValueExtractor + 컴파일 에러 | 값 제약은 자연스럽게 동작, 존재 제약은 PATCH 의미론과 충돌하므로 차단 |

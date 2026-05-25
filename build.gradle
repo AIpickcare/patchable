@@ -18,9 +18,13 @@ repositories {
 dependencies {
     api 'com.fasterxml.jackson.core:jackson-databind:2.18.3'
 
+    compileOnly 'jakarta.validation:jakarta.validation-api:3.0.2'
     compileOnly 'org.springframework:spring-context:6.2.7'
     compileOnly 'org.springframework.boot:spring-boot-autoconfigure:3.5.0'
 
+    testImplementation 'jakarta.validation:jakarta.validation-api:3.0.2'
+    testImplementation 'org.hibernate.validator:hibernate-validator:8.0.2.Final'
+    testImplementation 'org.glassfish.expressly:expressly:5.0.0'
     testImplementation 'org.junit.jupiter:junit-jupiter:5.12.2'
     testImplementation 'org.springframework:spring-context:6.2.7'
     testImplementation 'com.google.testing.compile:compile-testing:0.21.0'
