@@ -1,5 +1,7 @@
 # Patchable
 
+[![](https://jitpack.io/v/dudxor4587/patchable.svg)](https://jitpack.io/#dudxor4587/patchable)
+
 [한국어](README.md)
 
 **A Java library that eliminates PATCH boilerplate while preserving domain methods.**
@@ -89,6 +91,8 @@ dependencies {
     annotationProcessor 'com.github.dudxor4587:patchable:v0.1.0'
 }
 ```
+
+> For other build tools (Maven, Kotlin DSL, etc.), see the [JitPack page](https://jitpack.io/#dudxor4587/patchable).
 
 ### 2. Define Patch DTO
 

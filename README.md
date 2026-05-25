@@ -1,5 +1,7 @@
 # Patchable
 
+[![](https://jitpack.io/v/dudxor4587/patchable.svg)](https://jitpack.io/#dudxor4587/patchable)
+
 [English](README.en.md)
 
 **도메인 메서드를 보존하면서 PATCH 보일러플레이트를 없애는 Java 라이브러리.**
@@ -92,6 +94,8 @@ dependencies {
     annotationProcessor 'com.github.dudxor4587:patchable:v0.1.0'
 }
 ```
+
+> 다른 빌드 도구 (Maven, Kotlin DSL 등) 는 [JitPack 페이지](https://jitpack.io/#dudxor4587/patchable) 에서 확인하세요.
 
 ### 2. DTO 작성
 
