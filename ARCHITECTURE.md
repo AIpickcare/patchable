@@ -24,7 +24,7 @@ com.patchable/
 `@PatchOf` 가 붙은 record 를 찾는다.
 
 ```java
-@PatchOf(Member.class)
+@PatchOf(value = Member.class, method = "updateMember")
 public record MemberProfilePatch(
     String name,
     PatchField<String> bio
@@ -33,7 +33,7 @@ public record MemberProfilePatch(
 
 ### 2. 필드 추출
 
-record 의 메서드 중 파라미터가 없고, `toString` / `hashCode` / `equals` 가 아닌 것들을 필드로 취급한다. 각 필드에 대해:
+`dtoElement.getRecordComponents()` 로 record 컴포넌트만 정확히 추출한다. derived 메서드 오탐 없음. 각 필드에 대해:
 
 - `PatchField<T>` 타입인지 확인
 - 맞으면 inner type `T` 를 추출 (제네릭 타입 인자)
@@ -43,13 +43,14 @@ record 의 메서드 중 파라미터가 없고, `toString` / `hashCode` / `equa
 
 `@PatchOf(Member.class)` 의 `value()` 에서 Entity 의 `TypeMirror` 를 얻는다. 어노테이션 프로세서에서 클래스 리터럴에 접근할 때 `MirroredTypeException` 을 활용하는 패턴을 사용한다.
 
-### 4. 시그니처 매칭
+### 4. 메서드 매칭
 
-Entity 의 public 메서드들 중 **DTO 필드와 정확히 일치**하는 메서드를 찾는다.
+`@PatchOf` 의 `method` 에 지정된 이름으로 Entity 의 메서드를 찾고, DTO 필드와 파라미터를 비교한다.
 
 매칭 조건:
+- 메서드 이름이 `method` 값과 일치
 - 메서드의 파라미터 이름 = DTO 의 필드 이름 (정확히 같은 집합)
-- 파라미터 타입이 DTO 필드의 underlying type 과 일치 (`PatchField<String>` 이면 `String` 으로 비교)
+- 파라미터 타입이 DTO 필드의 underlying type 과 일치 (`PatchField<String>` 이면 `String` 으로 비교, boxing/unboxing 자동 처리)
 
 매칭 결과:
 - 1개 → 그 메서드 사용
@@ -100,7 +101,7 @@ private static <T> T resolve(PatchField<T> field, T current) {
 | 결정 | 선택 | 이유 |
 |------|------|------|
 | 호출 대상 | 도메인 메서드 (setter X) | 도메인 불변식 보존 |
-| 메서드 발견 | 시그니처 추론 | 문자열 결합 없음, 리팩토링 안전 |
+| 메서드 발견 | `method` 명시 + 파라미터 집합 매칭 | 명시적, 오탐 방지 |
 | 3 상태 타입 | sealed interface | 컴파일러가 빠뜨림 방지, Java 17+ |
 | DI 방식 | @Component + 생성자 주입 | 테스트 용이, Spring 관용 |
 | Java 최소 | 17 | sealed + record + instanceof 패턴 매칭 |
