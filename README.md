@@ -80,7 +80,6 @@ public record MemberProfilePatch(
 - 이름이 다른 경우 (예: API 명세와 도메인 명명이 다를 때) presentation 레이어의 converter 에서 매핑 후 PatchDTO 를 만들어 넘기면 됩니다
 - 타입 변환은 라이브러리가 하지 않습니다 — 변환이 필요하면 converter 에서 처리 후 넘기세요 (단, int ↔ Integer 같은 boxing/unboxing 은 자동 처리)
 - **DTO 필드 집합과 동일한 시그니처의 도메인 메서드가 Entity 에 있어야 합니다** — 예를 들어 Entity 에 `updateMember(name, email, bio)` 가 있고 DTO 에 `(name, bio)` 만 있으면 매칭 실패. 부분 필드만 패치하려면 해당 시그니처의 도메인 메서드를 별도로 만들어야 합니다
-- nested 객체 / embedded 타입의 부분 패치는 지원하지 않습니다
 
 ## 사용법
 
